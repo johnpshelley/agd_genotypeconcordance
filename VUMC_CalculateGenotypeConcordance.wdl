@@ -7,8 +7,8 @@ version 1.0
 import "https://raw.githubusercontent.com/shengqh/warp/develop/tasks/vumc_biostatistics/GcpUtils.wdl" as http_GcpUtils
 import "https://raw.githubusercontent.com/shengqh/warp/develop/pipelines/vumc_biostatistics/genotype/Utils.wdl" as http_GenotypeUtils
 import "https://raw.githubusercontent.com/shengqh/warp/develop/pipelines/vumc_biostatistics/agd/AgdUtils.wdl" as http_AgdUtils
-import "https://raw.githubusercontent.com/johnpshelley/ExtractSubset/main/ExtractSubset.wdl" as ExtractSubset_Array
-import "https://raw.githubusercontent.com/johnpshelley/ExtractSubset/main/ExtractSubset_NoFileArray.wdl" as ExtractSubset_NoFileArray
+import "https://raw.githubusercontent.com/johnpshelley/agd_genotypeconcordance/main/ExtractSubset.wdl" as ExtractSubset_Array
+import "https://raw.githubusercontent.com/johnpshelley/agd_genotypeconcordance/main/ExtractSubset_NoFileArray.wdl" as ExtractSubset_NoFileArray
 
 workflow IdentifyDiscordantVariants {
   input {
@@ -27,21 +27,14 @@ workflow IdentifyDiscordantVariants {
     File overlap_variants_extract_file
     File overlap_person_extract_file
 
-    File agd_overlap_pgen
-    File agd_overlap_pvar
-    File agd_overlap_psam
     File update_ids1
-
-    File mega_overlap_pgen
-    File mega_overlap_pvar
-    File mega_overlap_psam
     File update_ids2
 
     File ica_to_grid_map
     File fasta_file
   }
 
-    call ExtractSubset_MEGA as ExtractSubset_NoFileArray.ExtractSubset{
+    call ExtractSubset_NoFileArray.ExtractSubset as ExtractSubset_MEGA {
         input:
         bed_file = mega_bed_file,
         bim_file = mega_bim_file,
@@ -54,7 +47,18 @@ workflow IdentifyDiscordantVariants {
         target_gcp_folder = output_folder
   }
 
-    call ExtractSubset_AGD as ExtractSubset_Array.ExtractSubset{
+      if(defined(target_gcp_folder)){
+    call http_GcpUtils.MoveOrCopyThreeFiles as CopyFiles_MEGA {
+      input:
+        source_file1 = ExtractSubset_MEGA.output_pgen_file,
+        source_file2 = ExtractSubset_MEGA.output_pvar_file,
+        source_file3 = ExtractSubset_MEGA.output_psam_file,
+        is_move_file = false,
+        target_gcp_folder = select_first([target_gcp_folder])
+    }
+  }
+
+    call ExtractSubset_Array.ExtractSubset as ExtractSubset_AGD {
         input:
         pgen_files = agd_pgen_files,
         pvar_files = agd_pvar_files,
@@ -66,21 +70,32 @@ workflow IdentifyDiscordantVariants {
         target_prefix = output_prefix_agd,
         target_gcp_folder = output_folder
     }
-
-    call PLINK_pgendiff as PLINK_pgendiff{
+      
+      if(defined(target_gcp_folder)){
+    call http_GcpUtils.MoveOrCopyThreeFiles as CopyFiles_AGD {
       input:
-        pgen_file_1 = pgen_file_1,
-        pvar_file_1 = pvar_file_1,
-        psam_file_1 = psam_file_1,
-        pgen_file_2 = pgen_file_2,
-        pvar_file_2 = pvar_file_2,
-        psam_file_2 = psam_file_2,
+        source_file1 = ExtractSubset_AGD.output_freq_file,
+        source_file2 = ExtractSubset_AGD.output_geno_miss_file,
+        source_file3 = ExtractSubset_AGD.output_person_miss_file,
+        is_move_file = false,
+        target_gcp_folder = select_first([target_gcp_folder])
+    }
+  }
+
+    call PLINK_pgendiff as PLINK_pgendiff {
+      input:
+        pgen_file_1 = ExtractSubset_AGD.output_pgen_file,
+        pvar_file_1 = ExtractSubset_AGD.output_pvar_file,
+        psam_file_1 = ExtractSubset_AGD.output_psam_file,
+        pgen_file_2 = ExtractSubset_MEGA.output_pgen_file,
+        pvar_file_2 = ExtractSubset_MEGA.output_pvar_file,
+        psam_file_2 = ExtractSubset_MEGA.output_psam_file,
         update_ids1 = update_ids1,
         update_ids2 = update_ids2
     }
   
     if(defined(target_gcp_folder)){
-    call http_GcpUtils.MoveOrCopyTwoFiles as CopyFiles_plink2 {
+    call http_GcpUtils.MoveOrCopyTwoFiles as CopyFiles_pgendiff {
       input:
         source_file1 = PLINK_pgendiff.output_plink_pgendiff,
         source_file2 = PLINK_pgendiff.output_plink_log,
@@ -90,8 +105,16 @@ workflow IdentifyDiscordantVariants {
   }
 
   output {
-    File output_pgen_file = select_first([CopyFiles_plink2.output_file1, PLINK_pgendiff.output_plink_pgendiff])
-    File output_pvar_file = select_first([CopyFiles_plink2.output_file2, PLINK_pgendiff.output_plink_log])
+    File mega_maf = select_first([CopyFiles_MEGA.output_file1, MergePgenFiles_MOD.output_freq_file])
+    File mega_miss_geno = select_first([CopyFiles_MEGA.output_file2, MergePgenFiles_MOD.output_geno_miss_file])
+    File mega_miss_person = select_first([CopyFiles_MEGA.output_file3, MergePgenFiles_MOD.output_person_miss_file])
+    
+    File agd_maf  = select_first([CopyFiles_AGD.output_file1, MergePgenFiles_MOD.output_freq_file])
+    File agd_miss_geno  = select_first([CopyFiles_AGD.output_file2, MergePgenFiles_MOD.output_geno_miss_file])
+    File agd_miss_person  = select_first([CopyFiles_AGD.output_file3, MergePgenFiles_MOD.output_person_miss_file])
+
+    File output_pgen_file = select_first([CopyFiles_pgendiff.output_file1, PLINK_pgendiff.output_plink_pgendiff])
+    File output_pvar_file = select_first([CopyFiles_pgendiff.output_file2, PLINK_pgendiff.output_plink_log])
   }
 }
 
