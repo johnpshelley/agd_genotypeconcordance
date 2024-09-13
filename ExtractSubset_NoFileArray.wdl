@@ -80,6 +80,8 @@ task ExtractVariants{
     File variants_extract_file
     File person_extract_file
 
+    String target_prefix
+
     Int memory_gb = 20
 
     String docker = "hkim298/plink_1.9_2.0:20230116_20230707"
@@ -91,12 +93,12 @@ task ExtractVariants{
   String intermediate_pvar = "intermediate.pvar"
   String intermediate_psam = "intermediate.psam"
 
-  String new_pgen = "mega_agdsubset.pgen"
-  String new_pvar = "mega_agdsubset.pvar"
-  String new_psam = "mega_agdsubset.psam"
-  String new_afreq = "mega_agdsubset.afreq"
-  String new_geno_miss = "mega_agdsubset.vmiss"
-  String new_person_miss = "mega_agdsubset.smiss"
+  String new_pgen = target_prefix + ".pgen"
+  String new_pvar = target_prefix + ".pvar"
+  String new_psam = target_prefix + ".psam"
+  String new_freq = target_prefix + "_freq.txt"
+  String new_geno_miss = target_prefix + "_geno_miss.txt"
+  String new_person_miss = target_prefix + "_person_miss.txt"
 
   command {  
     plink2 \
@@ -121,7 +123,7 @@ task ExtractVariants{
       --missing \
       --freq \
       --make-pgen \
-      --out mega_agdsubset
+      --out ~{target_prefix}
 
   }
 
