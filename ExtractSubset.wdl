@@ -92,10 +92,10 @@ workflow ExtractSubset {
   output {
     File output_pgen_file = select_first([CopyFiles_plink2.output_file1, MergePgenFiles_MOD.output_pgen_file])
     File output_pvar_file = select_first([CopyFiles_plink2.output_file2, MergePgenFiles_MOD.output_pvar_file])
-    File output_psam_file = select_first([CopyFiles_plink2.output_file2, MergePgenFiles_MOD.output_psam_file])
+    File output_psam_file = select_first([CopyFiles_plink2.output_file3, MergePgenFiles_MOD.output_psam_file])
     File output_freq_file = select_first([CopyFiles_descriptives.output_file1, MergePgenFiles_MOD.output_freq_file])
     File output_geno_miss_file = select_first([CopyFiles_descriptives.output_file2, MergePgenFiles_MOD.output_geno_miss_file])
-    File output_person_miss_file = select_first([CopyFiles_descriptives.output_file2, MergePgenFiles_MOD.output_person_miss_file])
+    File output_person_miss_file = select_first([CopyFiles_descriptives.output_file3, MergePgenFiles_MOD.output_person_miss_file])
   }
 }
 
