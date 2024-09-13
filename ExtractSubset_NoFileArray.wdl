@@ -14,8 +14,6 @@ workflow ExtractSubset {
     File bim_file
     File fam_file
 
-    String target_prefix
-
     File id_map_file
     
     File fasta_file
@@ -23,6 +21,7 @@ workflow ExtractSubset {
     File variants_extract_file
     File person_extract_file
 
+    String target_prefix
     String target_gcp_folder
   }
 
@@ -96,9 +95,13 @@ task ExtractVariants{
   String new_pgen = target_prefix + ".pgen"
   String new_pvar = target_prefix + ".pvar"
   String new_psam = target_prefix + ".psam"
-  String new_freq = target_prefix + "_freq.txt"
-  String new_geno_miss = target_prefix + "_geno_miss.txt"
-  String new_person_miss = target_prefix + "_person_miss.txt"
+  String new_freq = target_prefix + ".afreq"
+  String new_geno_miss = target_prefix + ".vmiss"
+  String new_person_miss = target_prefix + ".smiss"
+
+  String new_freq_rename = target_prefix + "_freq.txt"
+  String new_geno_miss_rename = target_prefix + "_geno_miss.txt"
+  String new_person_miss_rename = target_prefix + "_person_miss.txt"
 
   command {  
     plink2 \
@@ -125,6 +128,10 @@ task ExtractVariants{
       --make-pgen \
       --out ~{target_prefix}
 
+    mv ~{new_freq} ~{new_freq_rename}
+    mv ~{new_geno_miss} ~{new_geno_miss_rename}
+    mv ~{new_person_miss} ~{new_person_miss_rename}
+
   }
 
   runtime {
@@ -138,9 +145,9 @@ task ExtractVariants{
     File output_pgen_file = new_pgen
     File output_pvar_file = new_pvar
     File output_psam_file = new_psam
-    File output_freq_file = new_afreq
-    File output_geno_miss_file = new_geno_miss
-    File output_person_miss_file = new_person_miss
+    File output_freq_file = new_freq_rename
+    File output_geno_miss_file = new_geno_miss_rename
+    File output_person_miss_file = new_person_miss_rename
   }
 
 }
