@@ -32,7 +32,8 @@ workflow ExtractSubset {
         fam_file = fam_file,
         fasta_file = fasta_file,
         variants_extract_file = variants_extract_file,
-        person_extract_file = person_extract_file
+        person_extract_file = person_extract_file,
+        target_prefix = target_prefix
     }
   
     if(defined(target_gcp_folder)){
