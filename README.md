@@ -1,4 +1,4 @@
-## Calculate genotype concordance 
+# Calculate genotype concordance 
 
 Steps:
   1. _JS_GetMEGAVariants.ipynb_: Identify GRIDs and autosomal variants (CHR:POS) genotyped in MEGA dataset (biovu_megaex_20231001_v2_plink_hg38)
@@ -7,12 +7,11 @@ Steps:
   4. _VUMC_CalculateGenotypeConcordance WDL_: Copy files to concordance folder within WGS-Flfagship QAQC workspace.
   5. _JS_CalculateDiscordance.Rmd_: Calculate variant-level and person-level discordance rates across all SNPs that are common (MAF>1%), high quality (Missingness<1%), and non-palindromic. 
 
-# Description of input data 
+## Description of input data 
 
 Define people and variants with joint genotyping & sequencing. Using these subsets of people and variants, subset MEGA genotyping and AGD sequencing datasets for pgen-diff comparison.
 
-
-# Required input data 
+## Required input data 
 
 - chromosomes (Array[String]): chromosomes to process: this.agd35k_bed_alls.chromosome
 - agd_pgen_files (Array[File]): AGD pgen files: this.agd35k_bed_alls.pgen_pgen
@@ -34,12 +33,23 @@ Define people and variants with joint genotyping & sequencing. Using these subse
 
 - target_gcp_folder (String):  GCP folder to which the output files will be copied: "gs://fc-secure-540f27be-97ea-4ffd-adb7-c195458eb278/concordance/"
 
-# Required input choices that have defaults: 
-
-- external_spike_in (Boolean): true
-- run_pca (Boolean): true
-- run_scope (Boolean): true
-- scope_supervised (Boolean): true
 
 
-## Compare sex discordance results (PLINK vs. DRAGEN)  
+# Compare sex discordance results (PLINK vs. DRAGEN)  
+
+Steps:
+  1. _JS_GetMEGAVariants.ipynb_: Pull gender as recorded in EPIC for each participant with both genotyping and sequencing.
+  1. _VUMC_PLINK_SexCheck WDL_: Using the MEGA genotyping subset, estimate the genetic sex using PLINK. 
+  2. _JS_CalculateDiscordance.Rmd_: Compare genetic sex calls from PLINK (genotyping) and DRAGEN (WGS)
+
+## Required input data 
+
+- bed_file (File): "gs://fc-secure-540f27be-97ea-4ffd-adb7-c195458eb278/uploads/megaex_000_a_best_call_v2_hg38/megaex_BestOfMultipleCalls_v2_hg38.bed"
+- bim_file (File): "gs://fc-secure-540f27be-97ea-4ffd-adb7-c195458eb278/uploads/megaex_000_a_best_call_v2_hg38/megaex_BestOfMultipleCalls_v2_hg38.bim"
+- fam_file (File): "gs://fc-secure-540f27be-97ea-4ffd-adb7-c195458eb278/uploads/megaex_000_a_best_call_v2_hg38/megaex_BestOfMultipleCalls_v2_hg38.fam"
+
+- person_extract_file (File): GRIDs with joint MEGA genotyping-AGD sequencing, identified in _JS_GetMEGAVariants.ipynb_
+- update_sex (File): Change EPIC_GENDER in .fam file
+
+- target_prefix (String): "MEGA_20231001_v2_hg38" - prefix for overlapping subset of AGD sequencing
+- target_gcp_folder (String):  GCP folder to which the output files will be copied: "gs://fc-secure-540f27be-97ea-4ffd-adb7-c195458eb278/concordance/"
