@@ -1,27 +1,38 @@
 ## Calculate genotype concordance 
 
 Steps:
-1. 
-2.
-3.
-4.
+  1. _JS_GetMEGAVariants.ipynb_: Identify GRIDs and autosomal variants (CHR:POS) genotyped in MEGA dataset (biovu_megaex_20231001_v2_plink_hg38)
+  2. _VUMC_CalculateGenotypeConcordance WDL_: Extract from AGD the GRIDs and variants genotyped in MEGA. SNPs are mapped to hg38 and SNP IDs renamed according to CHR:POS:REF:ALT. Multi-allelic variants were also excluded. Missingness and allele frequency for each variant is also calculated.
+  3. _VUMC_CalculateGenotypeConcordance WDL_: Identify genotyping differences using PLINK's pgen-diff. 
+  4. _VUMC_CalculateGenotypeConcordance WDL_: Copy files to concordance folder within WGS-Flfagship QAQC workspace.
+  5. _JS_CalculateDiscordance.Rmd_: Calculate variant-level and person-level discordance rates across all SNPs that are common (MAF>1%), high quality (Missingness<1%), and non-palindromic. 
 
 # Description of input data 
 
-Start with a set of AGD chromosomes in a data table, such that the following columns are arrays of strings or of file paths: chromosomes, pgen, psam and pvar files. 
-Include only the autosomes. 
+Define people and variants with joint genotyping & sequencing. Using these subsets of people and variants, subset MEGA genotyping and AGD sequencing datasets for pgen-diff comparison.
+
 
 # Required input data 
 
-- id_map_file (File): AGD ID map file: "gs://working-set-redeposit/ica-agd/cohort_001/20240303_agd35k_ica_primary_eligible.txt"
-- Chromosomes (Array[String]): chromosomes to process: this.agd35k_bed_alls.chromosome
-- source_pgen_files (Array[File]): AGD pgen files: this.agd35k_bed_alls.pgen_pgen
-- source_psam_files s  (Array[File]): AGD psam files: this.agd35k_bed_alls.pgen_psam
-- source_pvar_files  (Array[File]): AGD pvar files: this.agd35k_bed_alls.pgen_pvar
+- chromosomes (Array[String]): chromosomes to process: this.agd35k_bed_alls.chromosome
+- agd_pgen_files (Array[File]): AGD pgen files: this.agd35k_bed_alls.pgen_pgen
+- agd_psam_files s  (Array[File]): AGD psam files: this.agd35k_bed_alls.pgen_psam
+- agd_pvar_files  (Array[File]): AGD pvar files: this.agd35k_bed_alls.pgen_pvar
+- agd_overlap_person_extract_file (File): GRIDs with joint MEGA genotyping-AGD sequencing, identified in _JS_GetMEGAVariants.ipynb_
 
-- target_prefix (String): 20240827_AGD35K_ancestry - prefix for all the output files 
+- mega_bed_file (File): "gs://fc-secure-540f27be-97ea-4ffd-adb7-c195458eb278/uploads/megaex_000_a_best_call_v2_hg38/megaex_BestOfMultipleCalls_v2_hg38.bed"
+- mega_bim_file (File): "gs://fc-secure-540f27be-97ea-4ffd-adb7-c195458eb278/uploads/megaex_000_a_best_call_v2_hg38/megaex_BestOfMultipleCalls_v2_hg38.bim"
+- mega_fam_file (File): "gs://fc-secure-540f27be-97ea-4ffd-adb7-c195458eb278/uploads/megaex_000_a_best_call_v2_hg38/megaex_BestOfMultipleCalls_v2_hg38.fam"
+- mega_overlap_person_extract_file (File): GRIDs with joint MEGA genotyping-AGD sequencing, identified in _JS_GetMEGAVariants.ipynb_
 
-- target_gcp_folder (String):  GCP folder to which the output files will be copied: "gs://fc-secure-540f27be-97ea-4ffd-adb7-c195458eb278/AGD_ancestry_pipeline/"
+- overlap_variants_extract_file (File): variants genotyped in both MEGA & AGD, identified in _JS_GetMEGAVariants.ipynb_
+- fasta_file: define as hg38 in the workspace
+- ica_to_grid_map (File): AGD ID map file: "gs://fc-secure-540f27be-97ea-4ffd-adb7-c195458eb278/20240303_agd35k_ica_primary_eligible.txt"
+
+- update_ids_agd (String): "AGD_MEGAsubset" - prefix for overlapping subset of AGD sequencing
+- update_ids_mega (String): "MEGA_AGDsubset" - prefix for overlapping subset of MEGA genotyping
+
+- target_gcp_folder (String):  GCP folder to which the output files will be copied: "gs://fc-secure-540f27be-97ea-4ffd-adb7-c195458eb278/concordance/"
 
 # Required input choices that have defaults: 
 
