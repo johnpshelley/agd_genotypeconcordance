@@ -2,11 +2,13 @@ version: 1.2
 workflows:
   - subclass: WDL
     primaryDescriptorPath: /VUMC_CalculateGenotypeConcordance.wdl
+    name: VUMC_CalculateGenotypeConcordance
     authors:
       - name: John Shelley
         email: john.p.shelley@vanderbilt.edu
   - subclass: WDL
     primaryDescriptorPath: /PLINK_SexCheck.wdl
+    name: PLINK_SexCheck
     authors:
       - name: John Shelley
         email: john.p.shelley@vanderbilt.edu
