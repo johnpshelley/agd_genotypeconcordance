@@ -16,7 +16,7 @@ workflow CheckSex_plink {
 
     Array[String] chromosomes
 
-	  File update_sex
+	File update_sex
     File person_extract_file
     File id_map_file
 
@@ -107,7 +107,6 @@ task ExtractVariants{
       --pgen ~{pgen_file} \
       --pvar ~{pvar_file} \
       --psam ~{psam_file} \
-      --chr X,Y \
       --make-pgen \
       --out ~{chromosome}
   }
