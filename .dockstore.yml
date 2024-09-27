@@ -12,3 +12,9 @@ workflows:
     authors:
       - name: John Shelley
         email: john.p.shelley@vanderbilt.edu
+  - subclass: WDL
+    primaryDescriptorPath: /PLINK_SexCheck_Array.wdl
+    name: PLINK_SexCheck_Array
+    authors:
+      - name: John Shelley
+        email: john.p.shelley@vanderbilt.edu
