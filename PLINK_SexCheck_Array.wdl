@@ -197,9 +197,14 @@ task CheckSex_plink {
 
   Int disk_size = ceil(size([pgen_file, pvar_file, psam_file], "GB")  * 2) + 20
   
-  String intermediate_bed = "intermediate.bed"
-  String intermediate_bim = "intermediate.bim"
-  String intermediate_fam = "intermediate.fam"
+  String intermediate1_bed = "intermediate1.bed"
+  String intermediate1_bim = "intermediate1.bim"
+  String intermediate1_fam = "intermediate1.fam"
+  String intermediate1_ldred = "intermediate1.prune.in"
+
+  String intermediate2_bed = "intermediate2.bed"
+  String intermediate2_bim = "intermediate2.bim"
+  String intermediate2_fam = "intermediate2.fam"
 
   String output_sexcheck = target_prefix + ".sexcheck"
 
@@ -208,16 +213,25 @@ task CheckSex_plink {
       --pgen ~{pgen_file} \
       --pvar ~{pvar_file} \
       --psam ~{psam_file} \
+      --split-x hg38 \
+      --update-sex ~{update_sex} \
       --make-bed \
       --chr X,Y \
+      --indep-pairphase 20000 2000 0.5 \
+      --out intermediate1
+
+    plink2 \
+      --bed ~{intermediate1_bed} \
+      --bim ~{intermediate1_bim} \
+      --fam ~{intermediate1_fam} \
       --keep ~{person_extract_file} \
-      --update-sex ~{update_sex} \
-      --out intermediate
+      --extract ~{intermediate1_ldred} \
+      --out intermediate2
     
     plink \
-      --bim ~{intermediate_bim} \
-      --bed ~{intermediate_bed} \
-      --fam ~{intermediate_fam} \
+      --bed ~{intermediate2_bed} \
+      --bim ~{intermediate2_bim} \
+      --fam ~{intermediate2_fam} \
       --check-sex \
       --out ~{target_prefix}
 
