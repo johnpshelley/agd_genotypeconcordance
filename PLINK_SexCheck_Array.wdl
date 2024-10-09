@@ -213,7 +213,7 @@ task CheckSex_plink {
       --pgen ~{pgen_file} \
       --pvar ~{pvar_file} \
       --psam ~{psam_file} \
-      --split-x hg38 \
+      --split-par hg38 \
       --update-sex ~{update_sex} \
       --make-bed \
       --chr X,Y \
