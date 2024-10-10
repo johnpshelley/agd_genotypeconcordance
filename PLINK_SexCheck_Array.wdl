@@ -108,7 +108,6 @@ task ExtractVariants{
       --pvar ~{pvar_file} \
       --psam ~{psam_file} \
       --make-pgen \
-      --chr X,Y \
       --out ~{chromosome}
   }
 
