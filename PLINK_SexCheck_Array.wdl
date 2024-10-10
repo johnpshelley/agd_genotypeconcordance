@@ -216,7 +216,6 @@ task CheckSex_plink {
       --split-par hg38 \
       --update-sex ~{update_sex} \
       --make-bed \
-      --chr X,Y \
       --indep-pairphase 20000 2000 0.5 \
       --out intermediate1
 
