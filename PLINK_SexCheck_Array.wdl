@@ -92,11 +92,11 @@ task ExtractVariants{
     String chromosome
     File person_extract_file
 
-    Int memory_gb = 20
+    Int memory_gb = 40
     String docker = "hkim298/plink_1.9_2.0:20230116_20230707"
   }
 
-  Int disk_size = ceil(size([pgen_file, psam_file, pvar_file], "GB")  * 2) + 20
+  Int disk_size = ceil(size([pgen_file, psam_file, pvar_file], "GB")  * 2) + 40
 
   String new_pgen = chromosome + ".pgen"
   String new_pvar = chromosome + ".pvar"
@@ -108,6 +108,7 @@ task ExtractVariants{
       --pvar ~{pvar_file} \
       --psam ~{psam_file} \
       --make-pgen \
+      --chr X,Y \
       --out ~{chromosome}
   }
 
@@ -134,12 +135,12 @@ task MergePgenFiles_MOD {
     
     String target_prefix
 
-    Int memory_gb = 20
+    Int memory_gb = 40
 
     String docker = "hkim298/plink_1.9_2.0:20230116_20230707"
   }
 
-  Int disk_size = ceil((size(pgen_files, "GB") + size(pvar_files, "GB") + size(psam_files, "GB"))  * 3) + 20
+  Int disk_size = ceil((size(pgen_files, "GB") + size(pvar_files, "GB") + size(psam_files, "GB"))  * 3) + 40
 
   String new_pgen = target_prefix + ".pgen"
   String new_pvar = target_prefix + ".pvar"
@@ -190,12 +191,12 @@ task CheckSex_plink {
     File person_extract_file
     
     String target_prefix
-    Int memory_gb = 20
+    Int memory_gb = 40
 
     String docker = "hkim298/plink_1.9_2.0:20230116_20230707"
   }
 
-  Int disk_size = ceil(size([pgen_file, pvar_file, psam_file], "GB")  * 2) + 20
+  Int disk_size = ceil(size([pgen_file, pvar_file, psam_file], "GB")  * 2) + 40
   
   String intermediate1_bed = "intermediate1.bed"
   String intermediate1_bim = "intermediate1.bim"
