@@ -219,7 +219,7 @@ task CheckSex_plink {
       --update-sex ~{update_sex} \
       --set-all-var-ids @:#:$r:$a \
       --make-bed \
-      --indep-pairphase 20000 2000 0.5 \
+      --indep-pairwise 20000 2000 0.5 \
       --out intermediate1
 
     plink2 \
