@@ -228,6 +228,7 @@ task CheckSex_plink {
       --fam ~{intermediate1_fam} \
       --keep ~{person_extract_file} \
       --extract ~{intermediate1_ldred} \
+      --chr X,Y \
       --make-bed \
       --out intermediate2
     
