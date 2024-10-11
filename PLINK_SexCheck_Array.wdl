@@ -16,7 +16,7 @@ workflow CheckSex_plink {
 
     Array[String] chromosomes
 
-	File update_sex
+	  File update_sex
     File person_extract_file
     File id_map_file
 
@@ -217,6 +217,7 @@ task CheckSex_plink {
       --max-alleles 2 \
       --split-par hg38 \
       --update-sex ~{update_sex} \
+      --set-all-var-ids @:#:$r:$a \
       --make-bed \
       --indep-pairphase 20000 2000 0.5 \
       --out intermediate1
