@@ -218,8 +218,8 @@ task CheckSex_plink {
       --split-par hg38 \
       --update-sex ~{update_sex} \
       --set-all-var-ids @:#:$r:$a \
-      --make-bed \
       --indep-pairwise 20000 2000 0.5 \
+      --make-bed \
       --out intermediate1
 
     plink2 \
@@ -228,6 +228,7 @@ task CheckSex_plink {
       --fam ~{intermediate1_fam} \
       --keep ~{person_extract_file} \
       --extract ~{intermediate1_ldred} \
+      --make-bed \
       --out intermediate2
     
     plink \
