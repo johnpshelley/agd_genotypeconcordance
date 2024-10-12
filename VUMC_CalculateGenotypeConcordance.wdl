@@ -49,17 +49,6 @@ workflow IdentifyDiscordantVariants {
         target_gcp_folder = output_folder
   }
 
-#      if(defined(output_folder)){
-#    call http_GcpUtils.MoveOrCopyThreeFiles as CopyFiles_MEGA {
-#      input:
-#        source_file1 = ExtractSubset_MEGA.output_pgen_file,
-#        source_file2 = ExtractSubset_MEGA.output_pvar_file,
-#        source_file3 = ExtractSubset_MEGA.output_psam_file,
-#        is_move_file = false,
-#        target_gcp_folder = select_first([output_folder])
-#    }
-#  }
-
     call ExtractSubset_Array.ExtractSubset as ExtractSubset_AGD {
         input:
         pgen_files = agd_pgen_files,
@@ -73,17 +62,6 @@ workflow IdentifyDiscordantVariants {
         target_gcp_folder = output_folder,
         chromosomes = chromosomes
     }
-      
-#      if(defined(output_folder)){
-#    call http_GcpUtils.MoveOrCopyThreeFiles as CopyFiles_AGD {
-#      input:
-#        source_file1 = ExtractSubset_AGD.output_freq_file,
-#        source_file2 = ExtractSubset_AGD.output_geno_miss_file,
-#        source_file3 = ExtractSubset_AGD.output_person_miss_file,
-#        is_move_file = false,
-#       target_gcp_folder = select_first([output_folder])
-#    }
-# }
 
     call PLINK_pgendiff as PLINK_pgendiff {
       input:
@@ -108,14 +86,6 @@ workflow IdentifyDiscordantVariants {
   }
 
   output {
-#    File mega_maf = select_first([CopyFiles_MEGA.output_file1, ExtractSubset_MEGA.output_freq_file])
-#    File mega_miss_geno = select_first([CopyFiles_MEGA.output_file2, ExtractSubset_MEGA.output_geno_miss_file])
-#    File mega_miss_person = select_first([CopyFiles_MEGA.output_file3, ExtractSubset_MEGA.output_person_miss_file])
-    
-#    File agd_maf  = select_first([CopyFiles_AGD.output_file1, ExtractSubset_AGD.output_freq_file])
-#    File agd_miss_geno  = select_first([CopyFiles_AGD.output_file2, ExtractSubset_AGD.output_geno_miss_file])
-#    File agd_miss_person  = select_first([CopyFiles_AGD.output_file3, ExtractSubset_AGD.output_person_miss_file])
-
     File output_pgen_file = select_first([CopyFiles_pgendiff.output_file1, PLINK_pgendiff.output_plink_pgendiff])
     File output_pvar_file = select_first([CopyFiles_pgendiff.output_file2, PLINK_pgendiff.output_plink_log])
   }
@@ -157,6 +127,8 @@ task PLINK_pgendiff{
       --psam ~{psam_file_1} \
       --update-ids ~{update_ids1} \
       --rm-dup force-first \
+      --maf 0.01 \
+      --geno 0.01 \
       --make-pgen \
       --out intermediate1
       
@@ -166,6 +138,8 @@ task PLINK_pgendiff{
       --psam ~{psam_file_2} \
       --update-ids ~{update_ids2} \
       --rm-dup force-first \
+      --maf 0.01 \
+      --geno 0.01 \
       --make-pgen \
       --out intermediate2
       
