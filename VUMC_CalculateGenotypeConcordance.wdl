@@ -75,25 +75,25 @@ workflow IdentifyDiscordantVariants {
         update_ids2 = update_ids_mega
     }
   
-      if(defined(target_gcp_folder)){
+      if(defined(output_folder)){
     call http_GcpUtils.MoveOrCopyThreeFiles as CopyFiles_descriptives1 {
       input:
         source_file1 = PLINK_pgendiff.output_freq_file_1,
         source_file2 = PLINK_pgendiff.output_geno_miss_file_1,
         source_file3 = PLINK_pgendiff.output_person_miss_file_1,
         is_move_file = false,
-        target_gcp_folder = select_first([target_gcp_folder])
+        target_gcp_folder = select_first([output_folder])
     }
   }
 
-        if(defined(target_gcp_folder)){
+        if(defined(output_folder)){
     call http_GcpUtils.MoveOrCopyThreeFiles as CopyFiles_descriptives2 {
       input:
         source_file1 = PLINK_pgendiff.output_freq_file_2,
         source_file2 = PLINK_pgendiff.output_geno_miss_file_2,
         source_file3 = PLINK_pgendiff.output_person_miss_file_2,
         is_move_file = false,
-        target_gcp_folder = select_first([target_gcp_folder])
+        target_gcp_folder = select_first([output_folder])
     }
   }
 
