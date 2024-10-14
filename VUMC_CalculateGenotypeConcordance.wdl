@@ -177,6 +177,11 @@ task PLINK_pgendiff{
       --freq \
       --make-pgen \
       --out intermediate1 
+      
+      plink2 \
+      --pfile intermediate1 \
+      --missing \
+      --freq
 
     mv ~{freq1} ~{freq1_suffix}
     mv ~{genomiss1} ~{genomiss1_suffix}
@@ -190,10 +195,13 @@ task PLINK_pgendiff{
       --rm-dup force-first \
       --maf 0.01 \
       --geno 0.01 \
-      --missing \
-      --freq \
       --make-pgen \
       --out intermediate2
+
+      plink2 \
+      --pfile intermediate2 \
+      --missing \
+      --freq
 
     mv ~{freq2} ~{freq2_suffix}
     mv ~{genomiss2} ~{genomiss2_suffix}
