@@ -144,16 +144,16 @@ task PLINK_pgendiff{
 
   Int disk_size = ceil(size([pgen_file_1, psam_file_1, pvar_file_1, pgen_file_2, psam_file_2, pvar_file_2], "GB")  * 3) + 20
 
-  String freq1 = "intermediate1.afreq"
-  String genomiss1 = "intermediate1.vmiss"
-  String personmiss1 = "intermediate1.smiss"
+  String freq1 = "plink2.afreq"
+  String genomiss1 = "plink2.vmiss"
+  String personmiss1 = "plink2.smiss"
   String freq1_suffix = "AGD_MEGAsubset_freq.txt"
   String genomiss1_suffix = "AGD_MEGAsubset_geno_miss.txt"
   String personmiss1_suffix = "AGD_MEGAsubset_person_miss.txt"
 
-  String freq2 = "intermediate2.afreq"
-  String genomiss2 = "intermediate2.vmiss"
-  String personmiss2 = "intermediate2.smiss"
+  String freq2 = "plink2.afreq"
+  String genomiss2 = "plink2.vmiss"
+  String personmiss2 = "plink2.smiss"
   String freq2_suffix = "MEGA_AGDsubset_freq.txt"
   String genomiss2_suffix = "MEGA_AGDsubset_geno_miss.txt"
   String personmiss2_suffix = "MEGA_AGDsubset_person_miss.txt"
