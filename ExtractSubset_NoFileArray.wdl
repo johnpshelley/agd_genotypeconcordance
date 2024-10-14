@@ -46,25 +46,11 @@ workflow ExtractSubset {
         target_gcp_folder = select_first([target_gcp_folder])
     }
   }
-  
-      if(defined(target_gcp_folder)){
-    call http_GcpUtils.MoveOrCopyThreeFiles as CopyFiles_descriptives {
-      input:
-        source_file1 = ExtractVariants.output_freq_file,
-        source_file2 = ExtractVariants.output_geno_miss_file,
-        source_file3 = ExtractVariants.output_person_miss_file,
-        is_move_file = false,
-        target_gcp_folder = select_first([target_gcp_folder])
-    }
-  }
 
   output {
     File output_pgen_file = select_first([CopyFiles_plink2.output_file1, ExtractVariants.output_pgen_file])
     File output_pvar_file = select_first([CopyFiles_plink2.output_file2, ExtractVariants.output_pvar_file])
     File output_psam_file = select_first([CopyFiles_plink2.output_file3, ExtractVariants.output_psam_file])
-    File output_freq_file = select_first([CopyFiles_descriptives.output_file1, ExtractVariants.output_freq_file])
-    File output_geno_miss_file = select_first([CopyFiles_descriptives.output_file2, ExtractVariants.output_geno_miss_file])
-    File output_person_miss_file = select_first([CopyFiles_descriptives.output_file3, ExtractVariants.output_person_miss_file])
   }
 }
 
@@ -96,13 +82,6 @@ task ExtractVariants{
   String new_pgen = target_prefix + ".pgen"
   String new_pvar = target_prefix + ".pvar"
   String new_psam = target_prefix + ".psam"
-  String new_freq = target_prefix + ".afreq"
-  String new_geno_miss = target_prefix + ".vmiss"
-  String new_person_miss = target_prefix + ".smiss"
-
-  String new_freq_rename = target_prefix + "_freq.txt"
-  String new_geno_miss_rename = target_prefix + "_geno_miss.txt"
-  String new_person_miss_rename = target_prefix + "_person_miss.txt"
 
   command {  
     plink2 \
@@ -124,14 +103,8 @@ task ExtractVariants{
       --max-alleles 2 \
       --set-all-var-ids @:#:\$r:\$a \
       --new-id-max-allele-len 10000 \
-      --missing \
-      --freq \
       --make-pgen \
       --out ~{target_prefix}
-
-    mv ~{new_freq} ~{new_freq_rename}
-    mv ~{new_geno_miss} ~{new_geno_miss_rename}
-    mv ~{new_person_miss} ~{new_person_miss_rename}
 
   }
 
@@ -146,9 +119,6 @@ task ExtractVariants{
     File output_pgen_file = new_pgen
     File output_pvar_file = new_pvar
     File output_psam_file = new_psam
-    File output_freq_file = new_freq_rename
-    File output_geno_miss_file = new_geno_miss_rename
-    File output_person_miss_file = new_person_miss_rename
   }
 
 }

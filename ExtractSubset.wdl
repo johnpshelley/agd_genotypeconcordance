@@ -61,9 +61,6 @@ workflow ExtractSubset {
       pgen_files = ExtractVariants.output_pgen_file,
       pvar_files = ExtractVariants.output_pvar_file,
       psam_files = ExtractVariants.output_psam_file,
-      freq_files = ExtractVariants.output_freq,
-      geno_miss_files = ExtractVariants.output_geno_miss,
-      person_miss_files = ExtractVariants.output_person_miss,
       target_prefix = target_prefix
   }
   
@@ -77,25 +74,11 @@ workflow ExtractSubset {
         target_gcp_folder = select_first([target_gcp_folder])
     }
   }
-  
-      if(defined(target_gcp_folder)){
-    call http_GcpUtils.MoveOrCopyThreeFiles as CopyFiles_descriptives {
-      input:
-        source_file1 = MergePgenFiles_MOD.output_freq_file,
-        source_file2 = MergePgenFiles_MOD.output_geno_miss_file,
-        source_file3 = MergePgenFiles_MOD.output_person_miss_file,
-        is_move_file = false,
-        target_gcp_folder = select_first([target_gcp_folder])
-    }
-  }
 
   output {
     File output_pgen_file = select_first([CopyFiles_plink2.output_file1, MergePgenFiles_MOD.output_pgen_file])
     File output_pvar_file = select_first([CopyFiles_plink2.output_file2, MergePgenFiles_MOD.output_pvar_file])
     File output_psam_file = select_first([CopyFiles_plink2.output_file3, MergePgenFiles_MOD.output_psam_file])
-    File output_freq_file = select_first([CopyFiles_descriptives.output_file1, MergePgenFiles_MOD.output_freq_file])
-    File output_geno_miss_file = select_first([CopyFiles_descriptives.output_file2, MergePgenFiles_MOD.output_geno_miss_file])
-    File output_person_miss_file = select_first([CopyFiles_descriptives.output_file3, MergePgenFiles_MOD.output_person_miss_file])
   }
 }
 
@@ -127,9 +110,6 @@ task ExtractVariants{
   String new_pgen = chromosome + ".pgen"
   String new_pvar = chromosome + ".pvar"
   String new_psam = chromosome + ".psam"
-  String new_afreq = chromosome + ".afreq"
-  String new_geno_miss = chromosome + ".vmiss"
-  String new_person_miss = chromosome + ".smiss"
 
   command {
     plink2 \
@@ -151,8 +131,6 @@ task ExtractVariants{
       --max-alleles 2 \
       --set-all-var-ids @:#:\$r:\$a \
       --new-id-max-allele-len 10000 \
-      --missing \
-      --freq \
       --make-pgen \
       --out ~{chromosome}
 
@@ -169,9 +147,6 @@ task ExtractVariants{
     File output_pgen_file = new_pgen
     File output_pvar_file = new_pvar
     File output_psam_file = new_psam
-    File output_freq = new_afreq
-    File output_geno_miss = new_geno_miss
-    File output_person_miss = new_person_miss
   }
 
 }
@@ -181,9 +156,6 @@ task MergePgenFiles_MOD {
     Array[File] pgen_files
     Array[File] pvar_files
     Array[File] psam_files
-    Array[File] freq_files
-    Array[File] geno_miss_files
-    Array[File] person_miss_files
     
     String target_prefix
 
@@ -197,10 +169,6 @@ task MergePgenFiles_MOD {
   String new_pgen = target_prefix + ".pgen"
   String new_pvar = target_prefix + ".pvar"
   String new_psam = target_prefix + ".psam"
-  
-  String new_freq = target_prefix + "_freq.txt"
-  String new_geno_miss = target_prefix + "_geno_miss.txt"
-  String new_person_miss = target_prefix + "_person_miss.txt"
 
   String new_merged_pgen = target_prefix + "-merge.pgen"
   String new_merged_pvar = target_prefix + "-merge.pvar"
@@ -216,15 +184,11 @@ paste pgen.list pvar.list psam.list > merge.list
 
 plink2 --pmerge-list merge.list --make-pgen --out ~{target_prefix}
 
-rm -f ~{new_pgen} ~{new_pvar} ~{new_psam} ~{new_freq} ~{new_geno_miss} ~{new_person_miss}
+rm -f ~{new_pgen} ~{new_pvar} ~{new_psam}
 
 mv ~{new_merged_pgen} ~{new_pgen}
 mv ~{new_merged_pvar} ~{new_pvar}
 mv ~{new_merged_psam} ~{new_psam}
-
-cat ~{sep=' ' freq_files} > ~{new_freq}
-cat ~{sep=' ' geno_miss_files} > ~{new_geno_miss}
-cat ~{sep=' ' person_miss_files} > ~{new_person_miss}
 
 >>>
 
@@ -238,8 +202,5 @@ cat ~{sep=' ' person_miss_files} > ~{new_person_miss}
     File output_pgen_file = new_pgen
     File output_pvar_file = new_pvar
     File output_psam_file = new_psam
-    File output_freq_file = new_freq
-    File output_geno_miss_file = new_geno_miss
-    File output_person_miss_file = new_person_miss
   }
 }

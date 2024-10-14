@@ -75,6 +75,28 @@ workflow IdentifyDiscordantVariants {
         update_ids2 = update_ids_mega
     }
   
+      if(defined(target_gcp_folder)){
+    call http_GcpUtils.MoveOrCopyThreeFiles as CopyFiles_descriptives1 {
+      input:
+        source_file1 = PLINK_pgendiff.output_freq_file_1,
+        source_file2 = PLINK_pgendiff.output_geno_miss_file_1,
+        source_file3 = PLINK_pgendiff.output_person_miss_file_1,
+        is_move_file = false,
+        target_gcp_folder = select_first([target_gcp_folder])
+    }
+  }
+
+        if(defined(target_gcp_folder)){
+    call http_GcpUtils.MoveOrCopyThreeFiles as CopyFiles_descriptives2 {
+      input:
+        source_file1 = PLINK_pgendiff.output_freq_file_2,
+        source_file2 = PLINK_pgendiff.output_geno_miss_file_2,
+        source_file3 = PLINK_pgendiff.output_person_miss_file_2,
+        is_move_file = false,
+        target_gcp_folder = select_first([target_gcp_folder])
+    }
+  }
+
     if(defined(output_folder)){
     call http_GcpUtils.MoveOrCopyTwoFiles as CopyFiles_pgendiff {
       input:
@@ -88,6 +110,14 @@ workflow IdentifyDiscordantVariants {
   output {
     File output_pgen_file = select_first([CopyFiles_pgendiff.output_file1, PLINK_pgendiff.output_plink_pgendiff])
     File output_pvar_file = select_first([CopyFiles_pgendiff.output_file2, PLINK_pgendiff.output_plink_log])
+    
+    File output_freq_file_1 = select_first([CopyFiles_descriptives1.output_file1, PLINK_pgendiff.output_freq_file_1])
+    File output_geno_miss_file_1 = select_first([CopyFiles_descriptives1.output_file2, PLINK_pgendiff.output_geno_miss_file_1])
+    File output_person_miss_file_1 = select_first([CopyFiles_descriptives1.output_file3, PLINK_pgendiff.output_person_miss_file_1])
+    
+    File output_freq_file_2 = select_first([CopyFiles_descriptives2.output_file1, PLINK_pgendiff.output_freq_file_2])
+    File output_geno_miss_file_2 = select_first([CopyFiles_descriptives2.output_file2, PLINK_pgendiff.output_geno_miss_file_2])
+    File output_person_miss_file_2 = select_first([CopyFiles_descriptives2.output_file3, PLINK_pgendiff.output_person_miss_file_2])
   }
 }
 
@@ -114,6 +144,20 @@ task PLINK_pgendiff{
 
   Int disk_size = ceil(size([pgen_file_1, psam_file_1, pvar_file_1, pgen_file_2, psam_file_2, pvar_file_2], "GB")  * 3) + 20
 
+  String freq1 = "intermediate1.afreq"
+  String genomiss1 = "intermediate1.vmiss"
+  String personmiss1 = "intermediate1.smiss"
+  String freq1_suffix = "AGD_MEGAsubset_freq.txt"
+  String genomiss1_suffix = "AGD_MEGAsubset_geno_miss.txt"
+  String personmiss1_suffix = "AGD_MEGAsubset_person_miss.txt"
+
+  String freq2 = "intermediate2.afreq"
+  String genomiss2 = "intermediate2.vmiss"
+  String personmiss2 = "intermediate2.smiss"
+  String freq2_suffix = "MEGA_AGDsubset_freq.txt"
+  String genomiss2_suffix = "MEGA_AGDsubset_geno_miss.txt"
+  String personmiss2_suffix = "MEGA_AGDsubset_person_miss.txt"
+
   String output_plink_pgendiff = "plink2.log"
   String output_plink_log = "plink2.pdiff"
 
@@ -129,8 +173,14 @@ task PLINK_pgendiff{
       --rm-dup force-first \
       --maf 0.01 \
       --geno 0.01 \
+      --missing \
+      --freq \
       --make-pgen \
-      --out intermediate1
+      --out intermediate1 
+
+    mv ~{freq1} ~{freq1_suffix}
+    mv ~{genomiss1} ~{genomiss1_suffix}
+    mv ~{personmiss1} ~{personmiss1_suffix}
       
       plink2 \
       --pgen ~{pgen_file_2} \
@@ -140,8 +190,14 @@ task PLINK_pgendiff{
       --rm-dup force-first \
       --maf 0.01 \
       --geno 0.01 \
+      --missing \
+      --freq \
       --make-pgen \
       --out intermediate2
+
+    mv ~{freq2} ~{freq2_suffix}
+    mv ~{genomiss2} ~{genomiss2_suffix}
+    mv ~{personmiss2} ~{personmiss2_suffix}
       
       plink2 \
       --pfile intermediate1 \
@@ -158,6 +214,15 @@ task PLINK_pgendiff{
   output {
     File output_plink_pgendiff = output_plink_pgendiff
     File output_plink_log = output_plink_log
+
+    File output_freq_file_1 = freq1_suffix
+    File output_geno_miss_file_1 = genomiss1_suffix
+    File output_person_miss_file_1 = personmiss1_suffix
+
+    File output_freq_file_2 = freq2_suffix
+    File output_geno_miss_file_2 = genomiss2_suffix
+    File output_person_miss_file_2 = personmiss2_suffix
+
   }
 
 }
