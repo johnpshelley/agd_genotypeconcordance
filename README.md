@@ -1,11 +1,11 @@
 # Task 1: Calculate genotype concordance 
 
 Steps:
-  1. _concordance_prepfiles.ipynb_: Identify GRIDs and autosomal variants (CHR:POS) genotyped in MEGA dataset (biovu_megaex_20231001_v2_plink_hg38)
-  2. _VUMC_CalculateGenotypeConcordance WDL_: Extract from AGD the GRIDs and variants genotyped in MEGA. SNPs are mapped to hg38 and SNP IDs renamed as "CHR:POS:REF:ALT". Multi-allelic variants were also excluded. Missingness and allele frequency for each variant is calculated and output to concordance folder.
-  3. _VUMC_CalculateGenotypeConcordance WDL_: Identify genotyping differences using PLINK's pgen-diff. 
-  4. _VUMC_CalculateGenotypeConcordance WDL_: Copy files to concordance folder within WGS-Flfagship QAQC workspace.
-  5. _concordance_summary.Rmd_: Calculate variant-level and person-level discordance rates across all SNPs that are common (MAF>1%), high quality (Missingness<1%), and non-palindromic. 
+  1. MEGA data needs to be lifted over to hg38 first! 
+  2. **concordance_prepfiles.ipynb**: Identify GRIDs and autosomal variants (CHR:POS) genotyped in the MEGA dataset (biovu_megaex_20231001_v2_plink_hg38)
+  3. **VUMC_CalculateGenotypeConcordance WDL**: Extract the GRIDs and variants genotyped in MEGA. SNPs are mapped to hg38 and SNP IDs renamed as "CHR:POS:REF:ALT". Multi-allelic variants, rare (MAF<1%), and variants with high missingness (>1%) were excluded. Outputs are PLINK files for both subsets with calculated MAF and missingness.
+  4. **VUMC_CalculateGenotypeConcordance WDL**: Identify genotyping differences using PLINK's pgen-diff. Output is pgen-diff file with all discordant reads.
+  5. **concordance_summary.Rmd**: Calculate variant-level and person-level discordance rates across all SNPs that are common (MAF>1%), high quality (Missingness<1%), and non-palindromic. 
 
 ## Description of input data 
 
