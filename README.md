@@ -38,8 +38,8 @@ Define people and variants with joint genotyping & sequencing. Using these subse
 # Task 2: Compare sex discordance results (PLINK vs. DRAGEN)  
 
 Steps:
-  1. _concordance_prepfiles.ipynb_: Pull gender as recorded in EPIC for each participant with both genotyping and sequencing.
-  1. _VUMC_PLINK_SexCheck_Array WDL_: Using the AGD genotyping subset, estimate the genetic sex using PLINK. 
+  1. _concordance_prepfiles.ipynb_: Identify GRIDs for discordance analysis and pull EHR-recorded gender as recorded in EPIC 
+  1. _VUMC_PLINK_SexCheck_Array WDL_: Estimate the genetic sex using PLINK 
   2. _concordance_summary.Rmd_: Compare genetic sex calls from PLINK and DRAGEN (WGS)
 
 ## Required input data 
