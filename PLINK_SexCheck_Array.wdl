@@ -107,6 +107,7 @@ task ExtractVariants{
       --pgen ~{pgen_file} \
       --pvar ~{pvar_file} \
       --psam ~{psam_file} \
+      --keep ~{person_extract_file} \
       --make-pgen \
       --out ~{chromosome}
   }
@@ -226,7 +227,6 @@ task CheckSex_plink {
       --bed ~{intermediate1_bed} \
       --bim ~{intermediate1_bim} \
       --fam ~{intermediate1_fam} \
-      --keep ~{person_extract_file} \
       --extract ~{intermediate1_ldred} \
       --not-chr par1,par2 \
       --make-bed \
