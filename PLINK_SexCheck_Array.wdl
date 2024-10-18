@@ -236,7 +236,7 @@ task CheckSex_plink {
       --bed ~{intermediate2_bed} \
       --bim ~{intermediate2_bim} \
       --fam ~{intermediate2_fam} \
-      --check-sex \
+      --check-sex ycount \
       --out ~{target_prefix}
 
   }
