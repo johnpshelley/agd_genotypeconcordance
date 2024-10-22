@@ -7,10 +7,6 @@ Steps:
   4. **VUMC_CalculateGenotypeConcordance WDL**: Identify genotyping differences using PLINK's pgen-diff. Output is pgen-diff file with all discordant reads.
   5. **concordance_summary.Rmd**: Calculate variant-level and person-level discordance rates across all SNPs that are common (MAF>1%), high quality (Missingness<1%), and non-palindromic. 
 
-## Description of input data 
-
-Define people and variants with joint genotyping & sequencing. Using these subsets of people and variants, subset MEGA genotyping and AGD sequencing datasets for pgen-diff comparison.
-
 ## Required input data 
 
 - **chromosomes (Array[String])**: chromosomes to process: this.agd35k_bed_alls.chromosome
@@ -35,11 +31,11 @@ Define people and variants with joint genotyping & sequencing. Using these subse
 
 
 
-# Task 2: Compare sex discordance results (PLINK vs. DRAGEN)  
+# Task 2: Assess concorance between EHR-recorded gender and genetic sex
 
 Steps:
   1. _concordance_prepfiles.ipynb_: Identify GRIDs for discordance analysis and pull EHR-recorded gender as recorded in EPIC 
-  1. _VUMC_PLINK_SexCheck_Array WDL_: Estimate the genetic sex using PLINK 
+  1. _VUMC_PLINK_SexCheck_Array WDL_: Estimate the genetic sex using PLINK. Analysis is stratitifed by ancestry. Variants are limited to common variants outside of the pseudoautosomal region.
   2. _concordance_summary.Rmd_: Compare genetic sex calls from PLINK and DRAGEN (WGS)
 
 ## Required input data 
