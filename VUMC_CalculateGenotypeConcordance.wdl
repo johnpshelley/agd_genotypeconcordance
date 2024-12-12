@@ -72,7 +72,10 @@ workflow IdentifyDiscordantVariants {
         pvar_file_2 = ExtractSubset_MEGA.output_pvar_file,
         psam_file_2 = ExtractSubset_MEGA.output_psam_file,
         update_ids1 = update_ids_agd,
-        update_ids2 = update_ids_mega
+        update_ids2 = update_ids_mega,
+        target_prefix_agd = output_prefix_agd,  
+        target_prefix_mega = output_prefix_mega,
+        target_gcp_folder = output_folder
     }
   
       if(defined(output_folder)){
@@ -137,6 +140,10 @@ task PLINK_pgendiff{
     
     File update_ids2
 
+    String target_prefix_agd
+    String target_prefix_mega
+    String target_gcp_folder
+
     Int memory_gb = 20
 
     String docker = "hkim298/plink_1.9_2.0:20230116_20230707"
@@ -144,22 +151,22 @@ task PLINK_pgendiff{
 
   Int disk_size = ceil(size([pgen_file_1, psam_file_1, pvar_file_1, pgen_file_2, psam_file_2, pvar_file_2], "GB")  * 3) + 20
 
-  String freq1 = "plink2.afreq"
-  String genomiss1 = "plink2.vmiss"
-  String personmiss1 = "plink2.smiss"
-  String freq1_suffix = "AGD_MEGAsubset_freq.txt"
-  String genomiss1_suffix = "AGD_MEGAsubset_geno_miss.txt"
-  String personmiss1_suffix = "AGD_MEGAsubset_person_miss.txt"
+  String freq1 = target_prefix_agd + "_.afreq"
+  String genomiss1 = target_prefix_agd + "_.vmiss"
+  String personmiss1 = target_prefix_agd + "_.smiss"
+  String freq1_suffix = target_prefix_agd + "_freq.txt"
+  String genomiss1_suffix = target_prefix_agd + "_geno_miss.txt"
+  String personmiss1_suffix = target_prefix_agd + "_person_miss.txt"
 
-  String freq2 = "plink2.afreq"
-  String genomiss2 = "plink2.vmiss"
-  String personmiss2 = "plink2.smiss"
-  String freq2_suffix = "MEGA_AGDsubset_freq.txt"
-  String genomiss2_suffix = "MEGA_AGDsubset_geno_miss.txt"
-  String personmiss2_suffix = "MEGA_AGDsubset_person_miss.txt"
+  String freq2 = target_prefix_mega + "_.afreq"
+  String genomiss2 = target_prefix_mega + "_.vmiss"
+  String personmiss2 = target_prefix_mega + "_.smiss"
+  String freq2_suffix = target_prefix_mega + "_freq.txt"
+  String genomiss2_suffix = target_prefix_mega + "_geno_miss.txt"
+  String personmiss2_suffix = target_prefix_mega + "_person_miss.txt"
 
-  String output_plink_pgendiff = "plink2.log"
-  String output_plink_log = "plink2.pdiff"
+  String output_plink_pgendiff = target_prefix_agd + "_pdiff"
+  String output_plink_log = target_prefix_agd + "_pdiff.log"
 
 ## FIDs need to be changed to GRIDs. Remove duplicate variants in MEGA.
 
