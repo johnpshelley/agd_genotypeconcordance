@@ -41,7 +41,7 @@ workflow ExtractSubset {
       input:
         input_psam = psam_file,
         id_map_file = id_map_file,
-        #output_psam = replaced_sample_name
+        target_psam = replaced_sample_name
     }
 
     call ExtractVariants as ExtractVariants{
