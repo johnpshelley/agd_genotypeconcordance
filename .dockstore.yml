@@ -18,3 +18,15 @@ workflows:
     authors:
       - name: John Shelley
         email: john.p.shelley@vanderbilt.edu
+  - subclass: WDL
+    primaryDescriptorPath: /ExtractSubset.wdl
+    name: ExtractSubset_AGD
+    authors:
+      - name: John Shelley
+        email: john.p.shelley@vanderbilt.edu
+  - subclass: WDL
+    primaryDescriptorPath: /ExtractSubset_NoFileArray.wdl
+    name: ExtractSubset_MEGA
+    authors:
+      - name: John Shelley
+        email: john.p.shelley@vanderbilt.edu
